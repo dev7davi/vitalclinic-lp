@@ -7,23 +7,24 @@ Landing page da "Vital Clinic", um SaaS (fictício) de gestão de clínicas méd
 ```
 vital_cliniclp/
 ├── README.md                          este arquivo
-└── export/
-    ├── index.html                     página publicada (HTML + template + lógica JS)
-    ├── Vital Clinic - Landing.dc.html  arquivo-fonte do Design Canvas (mantido IDÊNTICO ao index.html)
-    ├── support.js                     runtime do Design Canvas (GERADO — não editar à mão)
-    └── assets/
-        ├── css/
-        │   └── styles.css             todo o CSS da página (extraído do <style> inline)
-        └── img/
-            ├── logo_vitalclinic.png         logo da marca (texto cinza) — usado no footer (fundo escuro, com filtro invert)
-            ├── logo_vitalclinic_black.png   mesma logo, texto na cor `--text-2` (#3d4759) — usado no menu (fundo claro); nome do arquivo é legado (era preto puro antes)
-            ├── fundo_hero_crop.jpg          foto do Hero, painel à direita (rosto em destaque) — EM USO
-            ├── fundo_hero_crop.png          versão intermediária do recorte, sem compressão — não usada
-            ├── fundo_hero.png               foto original (banner largo, sem recorte) — não usada, mantida como fonte
-            ├── fundo2_.jpg                  foto original do CTA final (médico + criança), fornecida pelo usuário, 6048×4024, 7.7MB — não usada diretamente, mantida como fonte
-            ├── fundo2_crop.jpg              versão redimensionada (1800px) e compactada (162KB) de `fundo2_.jpg` — foto do painel do CTA final, EM USO
-            └── avatar_*.jpg (11 arquivos)   fotos de pacientes fornecidas pelo usuário, recortadas em quadrado (220×220) e compactadas (~7-11KB cada) — usadas nos avatares circulares da "Fila de Espera" e "Agendados Hoje" no painel Atendimento da demo; nome de cada arquivo é o nome do paciente (ex: `avatar_maria_julia_fernandes.jpg`)
+├── index.html                         página publicada (HTML + template + lógica JS)
+├── Vital Clinic - Landing.dc.html     arquivo-fonte do Design Canvas (mantido IDÊNTICO ao index.html)
+├── support.js                         runtime do Design Canvas (GERADO — não editar à mão)
+└── assets/
+    ├── css/
+    │   └── styles.css             todo o CSS da página (extraído do <style> inline)
+    └── img/
+        ├── logo_vitalclinic.png         logo da marca (texto cinza) — usado no footer (fundo escuro, com filtro invert)
+        ├── logo_vitalclinic_black.png   mesma logo, texto na cor `--text-2` (#3d4759) — usado no menu (fundo claro); nome do arquivo é legado (era preto puro antes)
+        ├── fundo_hero_crop.jpg          foto do Hero, painel à direita (rosto em destaque) — EM USO
+        ├── fundo_hero_crop.png          versão intermediária do recorte, sem compressão — não usada
+        ├── fundo_hero.png               foto original (banner largo, sem recorte) — não usada, mantida como fonte
+        ├── fundo2_.jpg                  foto original do CTA final (médico + criança), fornecida pelo usuário, 6048×4024, 7.7MB — não usada diretamente, mantida como fonte
+        ├── fundo2_crop.jpg              versão redimensionada (1800px) e compactada (162KB) de `fundo2_.jpg` — foto do painel do CTA final, EM USO
+        └── avatar_*.jpg (11 arquivos)   fotos de pacientes fornecidas pelo usuário, recortadas em quadrado (220×220) e compactadas (~7-11KB cada) — usadas nos avatares circulares da "Fila de Espera" e "Agendados Hoje" no painel Atendimento da demo; nome de cada arquivo é o nome do paciente (ex: `avatar_maria_julia_fernandes.jpg`)
 ```
+
+> Histórico: até a publicação no GitHub/Vercel, esses arquivos ficaram dentro de uma subpasta `export/`. Movidos pra raiz do repositório porque hosts estáticos (Vercel, Netlify, GitHub Pages) esperam o `index.html` na raiz por padrão — o Vercel dava 404 com o `index.html` dentro de uma subpasta sem configurar um "Root Directory" manualmente no painel.
 
 ## Arquitetura — por que nem tudo é separável
 
@@ -47,12 +48,11 @@ São o **mesmo conteúdo, em dois arquivos**. `index.html` é a versão "publica
 
 ## Como rodar localmente
 
-Não tem build step. Basta servir a pasta `export/` com qualquer servidor estático (precisa de HTTP, não abrir como `file://`, por causa do `fetch` que o runtime faz).
+Não tem build step. Basta servir a raiz do projeto com qualquer servidor estático (precisa de HTTP, não abrir como `file://`, por causa do `fetch` que o runtime faz).
 
 **Com auto-refresh no navegador ao salvar (recomendado)** — usa [live-server](https://github.com/tapio/live-server) via `npx`, sem instalar nada permanente no projeto (nenhum `package.json`/`node_modules` fica na pasta):
 
 ```bash
-cd export
 npx live-server --port=8087 --no-browser .
 # abre http://localhost:8087/index.html
 ```
