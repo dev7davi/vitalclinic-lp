@@ -145,9 +145,9 @@ html {
     position: absolute;
     inset: 0;
     width: 130%;
-    height: 48%;
+    height: 50%;
 
-    background-image: linear-gradient(360deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.664) 15%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .1) 100%, rgba(255, 255, 255, .1) 100%), url('../img/fundo_hero_crop.jpg');
+    background-image: linear-gradient(360deg, #f3f7ff 5%, rgba(255, 255, 255, 0.493) 25%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .1) 60%, rgba(255, 255, 255, .1) 100%), url('../img/fundo_hero_crop.jpg');
     background-position: right 85% center;
   }
 
