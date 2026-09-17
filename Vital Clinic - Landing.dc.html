@@ -2463,6 +2463,18 @@ class Component extends DCLogic {
     this.initCounters();
     this.initDemoBars();
     this.initDemoReveal();
+    this.initMenuOutsideClick();
+  }
+
+  // Fecha o menu mobile ao tocar/clicar fora dele — cliques no próprio botão de
+  // abrir/fechar (burgerBtn) são ignorados aqui pra não brigar com o toggle do onClick dele.
+  initMenuOutsideClick() {
+    document.addEventListener('click', (e) => {
+      if (!this.menuOpen) return;
+      if (this.burgerBtn && this.burgerBtn.contains(e.target)) return;
+      if (this.mobileMenu && this.mobileMenu.contains(e.target)) return;
+      this.setMenu(false);
+    });
   }
 
   initScrollFx() {
