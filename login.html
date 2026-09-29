@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TX6F8QD5FY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-TX6F8QD5FY');
+  </script>
+  <script src="assets/js/analytics.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./support.js"></script>
+</head>
+
+<body>
+  <x-dc>
+    <helmet>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+      <style>
+        * {
+          box-sizing: border-box
+        }
+
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          height: 100%
+        }
+
+        body {
+          font-family: 'Inter', system-ui, sans-serif
+        }
+
+        a {
+          color: #014dc4;
+          text-decoration: none
+        }
+
+        a:hover {
+          color: #013a94
+        }
+
+        input::placeholder {
+          color: #9aa5b1
+        }
+
+        input:focus {
+          outline: none;
+          border-color: #014dc4 !important;
+          box-shadow: 0 0 0 3px rgba(1, 77, 196, .12)
+        }
+
+        button {
+          transition: background .18s ease, transform .18s ease
+        }
+
+        .vcl-wrap {
+          display: grid;
+          grid-template-columns: 1.15fr 1fr;
+          min-height: 100vh;
+          background: #fff
+        }
+
+        .vcl-video-col {
+          position: relative;
+          background: #eef1f5;
+          overflow: hidden
+        }
+
+        .vcl-video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover
+        }
+
+        .vcl-caption {
+          position: absolute;
+          top: 44px;
+          left: 56px;
+          right: 56px;
+          z-index: 2
+        }
+
+        .vcl-form-col {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 40px 32px
+        }
+
+        .vcl-logo {
+          height: 34px;
+          width: auto
+        }
+
+        @media (max-width:860px) {
+          .vcl-wrap {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto
+          }
+
+          .vcl-video-col {
+            height: 34vh;
+            min-height: 200px;
+            max-height: 300px
+          }
+
+          .vcl-caption {
+            top: 18px;
+            left: 22px;
+            right: 22px
+          }
+
+          .vcl-caption h1 {
+            font-size: 22px !important
+          }
+
+          .vcl-form-col {
+            padding: 32px 24px 48px
+          }
+        }
+
+        @media (max-width:420px) {
+          .vcl-video-col {
+            height: 150px;
+            min-height: 150px
+          }
+
+          .vcl-caption {
+            top: 12px;
+            left: 16px;
+            right: 16px
+          }
+
+          .vcl-caption h1 {
+            font-size: 17px !important
+          }
+        }
+      </style>
+    </helmet>
+    <div class="vcl-wrap">
+
+      <div class="vcl-video-col">
+        <video class="vcl-video" autoplay muted loop playsinline poster=""
+          aria-label="Duas mãos se encontrando, representando cuidado e conexão">
+          <source src="assets/video/hero-maos.mp4" type="video/mp4">
+        </video>
+      </div>
+
+      <div class="vcl-form-col">
+        <div style="width:100%;max-width:360px">
+          <div style="text-align:center;margin-bottom:26px">
+            <div style="display:flex;align-items:center;justify-content:center">
+              <img class="vcl-logo" src="assets/img/logo_vitalclinic_black.png" alt="Vital Clinic">
+            </div>
+            <p style="font-size:13.5px;color:#7a8494;margin:10px 0 0">Clique em "Entrar" para acessar o sistema</p>
+          </div>
+
+          <div
+            style="display:flex;align-items:center;gap:9px;background:#eef4ff;border:1px solid #d5e3fb;border-radius:10px;padding:11px 14px;margin-bottom:18px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#014dc4" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 21h18M6 21V7l6-4 6 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1" />
+            </svg>
+            <span style="font-size:13px;color:#014dc4;font-weight:600">Clínica: clinica_teste</span>
+          </div>
+
+          <form onSubmit="{{ handleSubmit }}">
+            <label style="display:block;font-size:13px;font-weight:600;color:#3d4759;margin-bottom:6px">Email</label>
+            <input type="email" placeholder="Seu endereço de email"
+              style="width:100%;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid #e2e6ec;border-radius:10px;margin-bottom:16px"
+              required="">
+
+            <label style="display:block;font-size:13px;font-weight:600;color:#3d4759;margin-bottom:6px">Senha</label>
+            <div style="position:relative;margin-bottom:22px">
+              <input type="{{ pwType }}" placeholder="Sua senha"
+                style="width:100%;font-family:inherit;font-size:14px;padding:12px 40px 12px 14px;border:1.5px solid #e2e6ec;border-radius:10px"
+                required="">
+              <button type="button" onClick="{{ togglePw }}" aria-label="Mostrar senha"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:#9aa5b1;display:flex">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+
+            <button type="submit"
+              style="width:100%;background:#014dc4;color:#fff;border:none;font-family:inherit;font-size:15px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;box-shadow:0 12px 24px -10px rgba(1,77,196,.5)"
+              style-hover="background:#013a94">Entrar</button>
+          </form>
+
+          <p style="text-align:center;font-size:12px;color:#9aa5b1;margin:18px 0 4px">Área restrita para profissionais
+            autorizados</p>
+          <p style="text-align:center;font-size:11.5px;color:#b0b8c2;margin:0"><a href="index.html"
+              style="color:#b0b8c2">← Voltar para o site</a></p>
+          <p style="text-align:center;font-size:11.5px;color:#b0b8c2;margin:10px 0 0">© 2026 Vital Clinic — Todos os
+            direitos reservados</p>
+        </div>
+      </div>
+
+    </div>
+  </x-dc>
+  <script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { showPw: false };
+  renderVals() {
+    return {
+      pwType: this.state.showPw ? 'text' : 'password',
+      togglePw: () => this.setState(s => ({ showPw: !s.showPw })),
+      handleSubmit: (e) => { e.preventDefault(); },
+    };
+  }
+}
+</script>
+</body>
+
+</html>

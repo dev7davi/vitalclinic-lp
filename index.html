@@ -2,6 +2,15 @@
 <html>
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TX6F8QD5FY"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-TX6F8QD5FY');
+  </script>
+  <script src="assets/js/analytics.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="./support.js"></script>
@@ -42,7 +51,7 @@
             <a href="#contato" data-nav-link="contato"
               style="font-size:14.5px;font-weight:600;color:var(--primary);padding:9px 15px;border-radius:100px"
               style-hover="background:var(--surface-2);color:var(--ink)">Contato</a>
-            <button data-action="login" onClick="{{ noop }}"
+            <button data-action="login" onClick="{{ goToLogin }}"
               style="margin-left:6px;background:rgba(255, 255, 255, 0.27);border:1.5px solid transparent;font-family:inherit;font-size:14.5px;font-weight:700;color:var(--text-2);padding:9px 18px;border-radius:100px;cursor:pointer"
               style-hover="background:var(--surface-2)">Acessar Sistema</button>
             <button data-action="signup" onClick="{{ noop }}"
@@ -74,7 +83,7 @@
           <a href="#contato" onClick="{{ closeMenu }}"
             style="font-size:15px;font-weight:600;color:var(--text-2);padding:11px 8px;border-radius:10px">Contato</a>
           <div style="height:1px;background:var(--border);margin:8px 0"></div>
-          <button data-action="login" onClick="{{ noop }}"
+          <button data-action="login" onClick="{{ goToLogin }}"
             style="background:transparent;border:1.5px solid var(--primary);font-family:inherit;text-align:left;font-size:15px;font-weight:700;color:var(--primary);padding:12px;border-radius:12px;cursor:pointer">Acessar
             Sistema</button>
           <button data-action="signup" onClick="{{ noop }}"
@@ -2360,6 +2369,7 @@ class Component extends DCLogic {
       mobileMenuRef: (el) => { this.mobileMenu = el; },
       onToggleMenu: () => this.setMenu(!this.menuOpen),
       closeMenu: () => this.setMenu(false),
+      goToLogin: () => { window.location.href = 'login.html'; },
       demo0: () => this.selectDemo(0, { animate: true }),
       demo1: () => this.selectDemo(1, { animate: true }),
       demo2: () => this.selectDemo(2, { animate: true }),
