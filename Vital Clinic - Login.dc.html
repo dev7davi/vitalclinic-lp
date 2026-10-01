@@ -17,213 +17,234 @@
 </head>
 
 <body>
-  <x-dc>
-    <helmet>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-      <style>
-        * {
-          box-sizing: border-box
-        }
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:#0b1220}
+  a{color:#014dc4;text-decoration:none}
+  a:hover{color:#013a94}
+  button{font-family:inherit;transition:background .2s ease,color .2s ease,transform .2s ease,border-color .2s ease}
+  :focus-visible{outline:2px solid #009bf8;outline-offset:3px;border-radius:6px}
+  .vcl-in{width:100%;font-family:inherit;font-size:16px;padding:8px 0 9px;border:none;border-bottom:1.5px solid #dbe3ee;background:transparent;color:#0b1220;border-radius:0}
+  .vcl-in:focus{outline:none;border-bottom-color:#014dc4}
+  .vcl-in::placeholder{color:#a3aebd}
+  @keyframes vclIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes vclFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+  @keyframes vclFloatB{0%,100%{transform:translate(0,0)}50%{transform:translate(12px,14px)}}
+  @keyframes vclSpin{to{transform:rotate(360deg)}}
+  @keyframes vclPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.18);opacity:.9}}
+  @keyframes vclDash{to{stroke-dashoffset:-400}}
 
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          height: 100%
-        }
+  .vcl-root{position:relative;min-height:100vh;overflow:hidden;background:#f3f7fd;transition:background .75s}
+  .vcl-root[data-mode="signup"]{background:#eaf6ff}
+  .vcl-hero{position:absolute;top:0;bottom:0;left:0;width:50%;z-index:2;transition:transform .75s cubic-bezier(.7,0,.2,1)}
+  .vcl-root[data-mode="signup"] .vcl-hero{transform:translateX(100%)}
+  .vcl-hfill{position:absolute;right:0;bottom:0;width:176px;height:176px;background:#f3f7fd;transition:right .75s,left .75s,background .75s}
+  .vcl-root[data-mode="signup"] .vcl-hfill{background:#eaf6ff}
+  .vcl-root[data-mode="signup"] .vcl-hfill{right:auto;left:0}
+  .vcl-clip{position:absolute;inset:0;overflow:hidden;border-radius:0 0 176px 0;transition:border-radius .75s cubic-bezier(.7,0,.2,1)}
+  .vcl-root[data-mode="signup"] .vcl-clip{border-radius:0 0 0 176px}
+  .vcl-bg{position:absolute;top:0;bottom:0;left:0;right:-176px;transition:opacity .75s ease}
+  .vcl-root[data-mode="signup"] .vcl-bg{left:-176px;right:0}
+  .vcl-bg-a,.vcl-sg-a{background:linear-gradient(160deg,#4da6ff 0%,#014dc4 72%)}
+  .vcl-bg-b,.vcl-sg-b{background:linear-gradient(160deg,#0a2a6b 0%,#012a73 45%,#009bf8 130%)}
+  .vcl-bg-b{opacity:0}
+  .vcl-root[data-mode="signup"] .vcl-bg-b{opacity:1}
+  .vcl-root[data-mode="signup"] .vcl-bg-a{opacity:0}
+  .vcl-ring{position:absolute;border-radius:50%;pointer-events:none}
+  .vcl-doc{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(400px,68%);height:min(74vh,600px);z-index:3}
+  .vcl-doc img{width:100%;height:100%;object-fit:cover;object-position:50% 8%;display:block}
+  .vcl-doc-arch{border-radius:999px 999px 0 0;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,20,80,.5)}
+  .vcl-brand{position:absolute;top:36px;left:56px;z-index:5;display:flex;align-items:center;gap:10px}
+  .vcl-caption{position:absolute;left:56px;right:56px;top:96px;z-index:5;color:#fff}
+  .vcl-chip{position:absolute;z-index:6;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 18px 36px -14px rgba(0,30,100,.45);display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:#0b1220}
+  .vcl-side{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:2;transition:transform .75s cubic-bezier(.7,0,.2,1)}
+  .vcl-root[data-mode="signup"] .vcl-side{transform:translateX(-100%)}
+  .vcl-sfill{position:absolute;left:0;top:0;width:176px;height:176px;transition:left .75s,right .75s;overflow:hidden}
+  .vcl-sg{position:absolute;top:0;left:0;width:calc(50vw + 176px);height:100vh;transition:opacity .75s;background-repeat:no-repeat}
+  .vcl-sg-b{opacity:0}
+  .vcl-sg{left:-50vw}
+  .vcl-root[data-mode="signup"] .vcl-sg{left:0}
+  .vcl-root[data-mode="signup"] .vcl-sg-b{opacity:1}
+  .vcl-root[data-mode="signup"] .vcl-sg-a{opacity:0}
+  .vcl-root[data-mode="signup"] .vcl-sfill{left:auto;right:0}
+  .vcl-sbody{position:absolute;inset:0;overflow-y:auto;background:#f3f7fd;border-radius:176px 0 0 0;display:flex;flex-direction:column;align-items:center;padding:32px;transition:border-radius .75s cubic-bezier(.7,0,.2,1),background .75s}
+  .vcl-root[data-mode="signup"] .vcl-sbody{border-radius:0 176px 0 0;background:#eaf6ff}
+  .vcl-card-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 64px);max-width:420px}
+  .vcl-foot{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);width:calc(100% - 64px);max-width:420px}
+  .vcl-tabs{display:flex;gap:26px;padding:16px 30px 0;background:rgba(255,255,255,.6);border-radius:26px 26px 0 0}
+  .vcl-tab{background:none;border:none;font-size:20px;font-weight:600;color:#8a97a8;padding:0 0 12px;cursor:pointer;border-bottom:3px solid transparent}
+  .vcl-tab:hover{color:#014dc4}
+  .vcl-root[data-mode="login"] .vcl-tab-login,.vcl-root[data-mode="signup"] .vcl-tab-signup{color:#0b1220;border-bottom-color:#014dc4}
+  .vcl-card{background:#fff;border-radius:26px;padding:30px;margin-top:-1px;box-shadow:0 30px 60px -30px rgba(1,50,140,.35)}
+  .vcl-f-signup{display:none}
+  .vcl-root[data-mode="signup"] .vcl-f-signup{display:block}
+  .vcl-root[data-mode="signup"] .vcl-f-login{display:none}
+  .vcl-f-login,.vcl-f-signup{animation:vclIn .5s .25s both}
+  .vcl-c-login{display:block}.vcl-c-signup{display:none}
+  .vcl-root[data-mode="signup"] .vcl-c-login{display:none}
+  .vcl-root[data-mode="signup"] .vcl-c-signup{display:block}
+  .vcl-root[data-mode="signup"] .vcl-submit{background:#009bf8 !important}
+  .vcl-lbl{display:block;font-size:13px;font-weight:600;color:#014dc4;margin:0 0 2px}
+  .vcl-soc{width:42px;height:42px;display:flex;align-items:center;justify-content:center;color:#5b6b82;border-radius:50%;background:none;border:none;cursor:pointer}
+  .vcl-soc:hover{color:#014dc4;background:rgba(1,77,196,.08)}
+  .vcl-swap{background:none;border:none;color:#014dc4;font-size:13px;font-weight:700;cursor:pointer;padding:10px 6px}
+  .vcl-swap:hover{color:#013a94;text-decoration:underline}
+  .vcl-back{display:block;text-align:center;font-size:11.5px;color:#9aa5b5;margin:14px 0 0;padding:10px}
+  .vcl-back:hover{color:#014dc4}
 
-        body {
-          font-family: 'Inter', system-ui, sans-serif
-        }
+  @media (max-width:1100px){.vcl-chip.vcl-chip-b{display:none}}
+  @media (max-width:860px){
+    .vcl-root{display:flex;flex-direction:column;min-height:100vh;background:#f3f7fd}
+    .vcl-hero,.vcl-root[data-mode="signup"] .vcl-hero{position:relative;width:100%;height:250px;transform:none;flex:none}
+    .vcl-hfill,.vcl-sfill,.vcl-chip{display:none}
+    .vcl-clip,.vcl-root[data-mode="signup"] .vcl-clip{border-radius:0 0 40px 40px}
+    .vcl-side,.vcl-root[data-mode="signup"] .vcl-side{position:relative;width:100%;transform:none;flex:1}
+    .vcl-sbody,.vcl-root[data-mode="signup"] .vcl-sbody{position:relative;inset:auto;border-radius:0;background:transparent;justify-content:flex-start;padding:26px 18px 36px}
+    .vcl-foot{position:static;left:auto;bottom:auto;transform:none;width:100%;margin-top:46px}
+    .vcl-card-wrap{position:static;top:auto;left:auto;transform:none;width:100%}
+    .vcl-brand{top:16px;left:20px}
+    .vcl-brand img{height:26px !important}
+    .vcl-caption{left:20px;right:45%;top:56px}
+    .vcl-caption h1{font-size:16px !important}
+    .vcl-doc{width:44%;left:auto;right:6%;transform:none;height:210px}
+    .vcl-tab{font-size:17px;padding:8px 0 14px}
+    .vcl-tabs{padding:14px 22px 0;gap:20px}
+    .vcl-card{padding:24px 22px}
+  }
+  @media (max-width:420px){
+    .vcl-hero,.vcl-root[data-mode="signup"] .vcl-hero{height:210px}
+    .vcl-doc{height:170px}
+    .vcl-caption h1{font-size:14px !important}
+  }
+</style>
+</helmet>
+<div class="vcl-root" data-mode="{{ mode }}">
 
-        a {
-          color: #014dc4;
-          text-decoration: none
-        }
+  <div class="vcl-hero">
+    <div class="vcl-hfill"></div>
+    <div class="vcl-clip">
+      <div class="vcl-bg vcl-bg-a"></div>
+      <div class="vcl-bg vcl-bg-b"></div>
 
-        a:hover {
-          color: #013a94
-        }
+      <div class="vcl-ring" style="width:420px;height:420px;left:50%;bottom:-60px;margin-left:-210px;border:2px dashed rgba(255,255,255,.35);animation:vclSpin 40s linear infinite"></div>
+      <div class="vcl-ring" style="width:300px;height:300px;left:50%;bottom:0;margin-left:-150px;background:rgba(255,255,255,.12);animation:vclPulse 5s ease-in-out infinite"></div>
+      <div class="vcl-ring" style="width:64px;height:64px;left:12%;top:38%;background:rgba(255,255,255,.28);animation:vclFloat 6s ease-in-out infinite"></div>
+      <div class="vcl-ring" style="width:26px;height:26px;right:14%;top:30%;background:#fff;opacity:.7;animation:vclFloatB 5s ease-in-out infinite"></div>
+      <div class="vcl-ring" style="width:150px;height:150px;right:-40px;top:48%;border:22px solid rgba(255,255,255,.14);animation:vclFloat 8s ease-in-out infinite"></div>
+      <svg class="vcl-ring" style="left:8%;top:56%;width:34px;height:34px;animation:vclFloatB 7s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg>
+      <svg class="vcl-ring" style="right:10%;top:60%;width:26px;height:26px;opacity:.8;animation:vclFloat 6s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 4v16M4 12h16"/></svg>
 
-        input::placeholder {
-          color: #9aa5b1
-        }
-
-        input:focus {
-          outline: none;
-          border-color: #014dc4 !important;
-          box-shadow: 0 0 0 3px rgba(1, 77, 196, .12)
-        }
-
-        button {
-          transition: background .18s ease, transform .18s ease
-        }
-
-        .vcl-wrap {
-          display: grid;
-          grid-template-columns: 1.15fr 1fr;
-          min-height: 100vh;
-          background: #fff
-        }
-
-        .vcl-video-col {
-          position: relative;
-          background: #eef1f5;
-          overflow: hidden
-        }
-
-        .vcl-video {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover
-        }
-
-        .vcl-caption {
-          position: absolute;
-          top: 44px;
-          left: 56px;
-          right: 56px;
-          z-index: 2
-        }
-
-        .vcl-form-col {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 40px 32px
-        }
-
-        .vcl-logo {
-          height: 34px;
-          width: auto
-        }
-
-        @media (max-width:860px) {
-          .vcl-wrap {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto
-          }
-
-          .vcl-video-col {
-            height: 34vh;
-            min-height: 200px;
-            max-height: 300px
-          }
-
-          .vcl-caption {
-            top: 18px;
-            left: 22px;
-            right: 22px
-          }
-
-          .vcl-caption h1 {
-            font-size: 22px !important
-          }
-
-          .vcl-form-col {
-            padding: 32px 24px 48px
-          }
-        }
-
-        @media (max-width:420px) {
-          .vcl-video-col {
-            height: 150px;
-            min-height: 150px
-          }
-
-          .vcl-caption {
-            top: 12px;
-            left: 16px;
-            right: 16px
-          }
-
-          .vcl-caption h1 {
-            font-size: 17px !important
-          }
-        }
-      </style>
-    </helmet>
-    <div class="vcl-wrap">
-
-      <div class="vcl-video-col">
-        <video class="vcl-video" autoplay muted loop playsinline poster=""
-          aria-label="Duas mãos se encontrando, representando cuidado e conexão">
-          <source src="assets/video/hero-maos.mp4" type="video/mp4">
-        </video>
+      <div class="vcl-brand"><img src="assets/img/logo_vitalclinic.png" alt="Vital Clinic" style="height:34px;filter:brightness(0) invert(1)"></div>
+      <div class="vcl-caption">
+        <h1 class="vcl-c-login" style="font-weight:800;font-size:32px;line-height:1.15;letter-spacing:-0.02em;margin:0;max-width:14ch">O carinho é o que nos conecta.</h1>
+        <h1 class="vcl-c-signup" style="font-weight:800;font-size:32px;line-height:1.15;letter-spacing:-0.02em;margin:0;max-width:16ch">Sua clínica rodando em minutos.</h1>
       </div>
 
-      <div class="vcl-form-col">
-        <div style="width:100%;max-width:360px">
-          <div style="text-align:center;margin-bottom:26px">
-            <div style="display:flex;align-items:center;justify-content:center">
-              <img class="vcl-logo" src="assets/img/logo_vitalclinic_black.png" alt="Vital Clinic">
+      <div class="vcl-doc" ref="{{ cutoutHost }}" style="display:none"></div>
+      <sc-if value="{{ noCutout }}" hint-placeholder-val="{{ true }}">
+        <div class="vcl-doc vcl-doc-arch"><img src="assets/img/doctor.jpg" alt="Médico sorrindo, de jaleco e estetoscópio"></div>
+      </sc-if>
+
+      <svg style="position:absolute;left:0;right:0;bottom:70px;width:100%;height:60px;z-index:4;pointer-events:none" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 H120 L140 30 L152 8 L168 52 L182 18 L192 30 H400" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="120 280" style="animation:vclDash 3.2s linear infinite"/></svg>
+    </div>
+
+    <div class="vcl-chip" style="left:7%;bottom:24%;animation:vclFloat 5.5s ease-in-out infinite"><span style="width:28px;height:28px;border-radius:50%;background:#e3f9ee;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a8f5c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>Consulta confirmada</div>
+    <div class="vcl-chip vcl-chip-b" style="right:5%;bottom:44%;animation:vclFloatB 6.5s ease-in-out infinite"><span style="width:28px;height:28px;border-radius:50%;background:#eaf1ff;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#014dc4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>+12 agendamentos hoje</div>
+  </div>
+
+  <div class="vcl-side">
+    <div class="vcl-sfill"><div class="vcl-sg vcl-sg-a"></div><div class="vcl-sg vcl-sg-b"></div></div>
+    <div class="vcl-sbody">
+      <div class="vcl-card-wrap">
+        <div class="vcl-tabs">
+          <button class="vcl-tab vcl-tab-login" onClick="{{ goLogin }}" type="button">Entrar</button>
+          <button class="vcl-tab vcl-tab-signup" onClick="{{ goSignup }}" type="button">Cadastrar</button>
+        </div>
+        <div class="vcl-card">
+
+          <form class="vcl-f-login" onSubmit="{{ handleSubmit }}">
+            <div style="display:flex;align-items:center;gap:9px;background:#eef4ff;border-radius:10px;padding:10px 13px;margin-bottom:20px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#014dc4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M6 21V7l6-4 6 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1"/></svg>
+              <span style="font-size:12.5px;color:#014dc4;font-weight:600">Clínica: clinica_teste</span>
             </div>
-            <p style="font-size:13.5px;color:#7a8494;margin:10px 0 0">Clique em "Entrar" para acessar o sistema</p>
-          </div>
-
-          <div
-            style="display:flex;align-items:center;gap:9px;background:#eef4ff;border:1px solid #d5e3fb;border-radius:10px;padding:11px 14px;margin-bottom:18px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#014dc4" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 21h18M6 21V7l6-4 6 4v14M9 9h1M14 9h1M9 13h1M14 13h1M9 17h1M14 17h1" />
-            </svg>
-            <span style="font-size:13px;color:#014dc4;font-weight:600">Clínica: clinica_teste</span>
-          </div>
-
-          <form onSubmit="{{ handleSubmit }}">
-            <label style="display:block;font-size:13px;font-weight:600;color:#3d4759;margin-bottom:6px">Email</label>
-            <input type="email" placeholder="Seu endereço de email"
-              style="width:100%;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid #e2e6ec;border-radius:10px;margin-bottom:16px"
-              required="">
-
-            <label style="display:block;font-size:13px;font-weight:600;color:#3d4759;margin-bottom:6px">Senha</label>
-            <div style="position:relative;margin-bottom:22px">
-              <input type="{{ pwType }}" placeholder="Sua senha"
-                style="width:100%;font-family:inherit;font-size:14px;padding:12px 40px 12px 14px;border:1.5px solid #e2e6ec;border-radius:10px"
-                required="">
-              <button type="button" onClick="{{ togglePw }}" aria-label="Mostrar senha"
-                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:#9aa5b1;display:flex">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </button>
+            <label class="vcl-lbl">Email</label>
+            <input class="vcl-in" type="email" placeholder="Seu endereço de email" required="" style="margin-bottom:20px">
+            <label class="vcl-lbl">Senha</label>
+            <div style="position:relative;margin-bottom:26px">
+              <input class="vcl-in" type="{{ pwType }}" placeholder="Sua senha" required="" style="padding-right:42px">
+              <button type="button" onClick="{{ togglePw }}" aria-label="Mostrar senha" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;padding:11px;cursor:pointer;color:#a3aebd;display:flex"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
             </div>
-
-            <button type="submit"
-              style="width:100%;background:#014dc4;color:#fff;border:none;font-family:inherit;font-size:15px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;box-shadow:0 12px 24px -10px rgba(1,77,196,.5)"
-              style-hover="background:#013a94">Entrar</button>
+            <button class="vcl-submit" type="submit" style="width:100%;background:#014dc4;color:#fff;border:none;font-size:15px;font-weight:700;padding:14px;border-radius:12px;cursor:pointer;box-shadow:0 14px 26px -12px rgba(1,77,196,.6)" style-hover="background:#013a94">Entrar</button>
+            <div style="text-align:center;margin-top:16px;font-size:13px;color:#6b7788">Ainda não tem conta? <button class="vcl-swap" type="button" onClick="{{ goSignup }}">Cadastrar</button></div>
           </form>
 
-          <p style="text-align:center;font-size:12px;color:#9aa5b1;margin:18px 0 4px">Área restrita para profissionais
-            autorizados</p>
-          <p style="text-align:center;font-size:11.5px;color:#b0b8c2;margin:0"><a href="index.html"
-              style="color:#b0b8c2">← Voltar para o site</a></p>
-          <p style="text-align:center;font-size:11.5px;color:#b0b8c2;margin:10px 0 0">© 2026 Vital Clinic — Todos os
-            direitos reservados</p>
+          <form class="vcl-f-signup" onSubmit="{{ handleSubmit }}">
+            <label class="vcl-lbl">Nome completo</label>
+            <input class="vcl-in" type="text" placeholder="Seu nome" required="" style="margin-bottom:16px">
+            <label class="vcl-lbl">Nome da clínica</label>
+            <input class="vcl-in" type="text" placeholder="Ex.: Clínica Nogueira" required="" style="margin-bottom:16px">
+            <label class="vcl-lbl">Email</label>
+            <input class="vcl-in" type="email" placeholder="voce@clinica.com.br" required="" style="margin-bottom:16px">
+            <label class="vcl-lbl">Senha</label>
+            <input class="vcl-in" type="password" placeholder="Crie uma senha" required="" style="margin-bottom:24px">
+            <button class="vcl-submit" type="submit" style="width:100%;background:#014dc4;color:#fff;border:none;font-size:15px;font-weight:700;padding:14px;border-radius:12px;cursor:pointer;box-shadow:0 14px 26px -12px rgba(0,155,248,.6)">Criar conta grátis</button>
+            <div style="text-align:center;margin-top:16px;font-size:13px;color:#6b7788">Já tenho conta. <button class="vcl-swap" type="button" onClick="{{ goLogin }}">Entrar</button></div>
+          </form>
+
         </div>
       </div>
 
+      <div class="vcl-foot">
+        <div style="display:flex;justify-content:center;gap:6px">
+          <button class="vcl-soc" aria-label="Instagram" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.4a4 4 0 1 1-7.4 2.2 4 4 0 0 1 7.4-2.2zM17.5 6.5h.01"/></svg></button>
+          <button class="vcl-soc" aria-label="WhatsApp" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg></button>
+        </div>
+        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;color:#6b7788">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>contato@vitalclinic.com.br
+        </div>
+        <p style="text-align:center;font-size:11.5px;color:#9aa5b5;margin:14px 0 0">© 2026 Vital Clinic · Área restrita para profissionais autorizados</p>
+        <a class="vcl-back" href="index.html">← Voltar para o site</a>
+      </div>
     </div>
-  </x-dc>
-  <script type="text/x-dc" data-dc-script>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { showPw: false };
+  state = { showPw: false, mode: 'login', cutout: false };
+  componentDidMount() {
+    fetch('assets/img/doctor-cutout.png', { method: 'HEAD' }).then(r => {
+      const t = r.headers.get('content-type') || '';
+      if (r.ok && t.indexOf('image') === 0 && this.host) {
+        const img = document.createElement('img');
+        img.alt = 'Médico sorrindo, de jaleco e estetoscópio';
+        img.src = 'assets/img/doctor-cutout.png';
+        this.host.appendChild(img);
+        this.host.style.display = 'block';
+        this.setState({ cutout: true });
+      }
+    }).catch(() => {});
+  }
   renderVals() {
     return {
+      mode: this.state.mode,
+      cutoutHost: (el) => { this.host = el; },
+      noCutout: !this.state.cutout,
       pwType: this.state.showPw ? 'text' : 'password',
       togglePw: () => this.setState(s => ({ showPw: !s.showPw })),
+      goLogin: () => this.setState({ mode: 'login' }),
+      goSignup: () => this.setState({ mode: 'signup' }),
       handleSubmit: (e) => { e.preventDefault(); },
     };
   }
 }
 </script>
 </body>
-
 </html>
