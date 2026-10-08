@@ -20,10 +20,18 @@
   box-sizing: border-box
 }
 
+/* overflow-x:hidden aqui (não só no #vc-top da landing) porque o runtime do Design Canvas
+   desanexa cada <section> de nível superior de #vc-top, tornando-as "ilhas" irmãs soltas dentro
+   de .sc-host — então um elemento de sangria total (width:100vw, ex: .vc-resp-bg) que estoura a
+   largura por causa da barra de rolagem vertical (100vw inclui a barra, mas o viewport "de
+   verdade" não) não fica contido pelo overflow-x do #vc-top, só por essa trava aqui em cima,
+   que cobre a página inteira de verdade, pouco importa onde o runtime realocou cada seção. */
 html,
 body {
   margin: 0;
-  padding: 0
+  padding: 0;
+  min-height: 100%;
+  overflow-x: hidden
 }
 
 body {
@@ -320,10 +328,86 @@ html {
 }
 
 .vc-resp-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, .62fr) minmax(0, 1.38fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 40px;
-  align-items: center
+  align-items: center;
+  /* o deslize horizontal (SLIDE) da troca de estado passa um pouco da borda em telas estreitas
+     durante a transição — isso contém o overflow aqui dentro, sem afetar a sangria 100vw do
+     .vc-resp-bg (que é filho do <section> por fora deste grid, não é cortado por essa regra) */
+  overflow: hidden
+}
+
+/* Fundo em gradiente exclusivo do estado "Atendimento" — fica a opacity:0 em repouso (Agenda e
+   Prontuário ficam em fundo branco normal); selectRespTab() alterna a opacity ao trocar de aba,
+   e essa transition é o que faz a troca ficar suave (crossfade) em vez de instantânea. */
+.vc-resp-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary) 55%, #fff);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease
+}
+
+/* Barra de abas (Agenda/Atendimento/Prontuário) — navegação por clique (desktop) e por toque
+   (tablet/celular, além do swipe). Fundo sólido e z-index acima do .vc-resp-bg porque esse
+   gradiente muda de opacity conforme a aba ativa (Atendimento fica azul forte) — a barra precisa
+   ser legível nos dois cenários (fundo branco ou azul), por isso não é transparente. */
+/* Cada aba é uma pílula independente (mesmo padrão das abas "Dashboard/Agenda/Atendimento" da
+   seção de demonstração logo acima) — sem um "bar" compartilhado por trás, pra não ficar
+   esquisito quando quebra linha em telas estreitas (3 abas não cabem numa linha só abaixo de
+   ~480px; um balão com cantos de 100px de raio fica estranho quando vira 2 linhas). */
+.vc-resp-tabs {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px
+}
+
+.vc-resp-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 100px;
+  cursor: pointer;
+  background: #fff;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 28px -16px rgba(15, 21, 29, .16);
+  transition: background .25s ease, color .25s ease, border-color .25s ease
+}
+
+.vc-resp-tab.is-active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary)
+}
+
+.vc-resp-tab:hover:not(.is-active) {
+  background: var(--surface-2);
+  color: var(--ink)
+}
+
+@media (max-width:480px) {
+  .vc-resp-tab {
+    font-size: 12.5px;
+    padding: 9px 12px
+  }
 }
 
 .vc-plans-grid {
@@ -338,12 +422,54 @@ html {
   gap: 20px
 }
 
+/* Palco de texto da seção "100% Responsivo" — os 3 estados (Agenda/Atendimento/Prontuário)
+   ocupam a MESMA célula de grid (empilhados), e só o que tem .is-active fica visível. A troca
+   de qual tem .is-active é o que selectRespTab() controla (clique na aba ou swipe no mobile). */
+.vc-resp-text-stage {
+  display: grid;
+  max-width: 460px;
+  margin-left: auto
+}
+
+.vc-resp-text-state {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity .35s ease, transform .35s ease
+}
+
+.vc-resp-text-state.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0)
+}
+
+/* Palco dos celulares — os 3 estados (Agenda/Atendimento/Prontuário) ocupam a MESMA célula de
+   grid (empilhados), e só o que tem .is-active fica visível. A troca de qual tem .is-active é o
+   que selectRespTab() controla (clique na aba ou swipe), em conjunto com o texto ao lado. */
 .vc-phones-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 4px
+  display: grid;
+  justify-items: center;
+  align-items: center
+}
+
+.vc-phone-item {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(14px);
+  transition: opacity .35s ease, transform .35s ease
+}
+
+.vc-phone-item.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(0)
 }
 
 /* Mockups de celular (tamanho "de verdade" definido em .vc-phone-inner-*, sempre fixo — o
@@ -355,12 +481,7 @@ html {
    aqui o navegador só redesenha a mesma composição em escala menor. .vc-phone-inner-* é maior que
    o próprio aparelho (360x752/396x824) — a diferença é a margem reservada pra sombra do aparelho
    (box-shadow) não ser cortada pelo overflow:hidden de .vc-phone-scale-*; .vc-phone-float fica
-   centralizado dentro dessa margem via flex. Escala de 0.575x do tamanho intrínseco por padrão
-   (15% maior que a versão anterior de 0.5x). */
-.vc-phone-item {
-  flex: none
-}
-
+   centralizado dentro dessa margem via flex. */
 .vc-phone-item-2 {
   margin-bottom: 0
 }
@@ -371,7 +492,7 @@ html {
 
 .vc-phone-inner {
   transform-origin: 0 0;
-  transform: scale(.52);
+  transform: scale(.624);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -385,78 +506,37 @@ html {
   margin-top: 12px
 }
 
+/* Tamanhos 20% maiores em toda faixa (pedido explícito), mantendo a mesma proporção entre as
+   3 faixas de antes (desktop/tablet/celular) — só a escala de cada uma subiu, nada mudou na
+   lógica de "janela recortada (vc-phone-scale-*) + miniatura em transform:scale (vc-phone-inner-*)"
+   explicada no comentário acima. */
 .vc-phone-scale-1,
+.vc-phone-scale-2,
 .vc-phone-scale-3 {
-  width: 250px;
-  height: 453px
-}
-
-.vc-phone-scale-2 {
-  width: 268px;
-  height: 491px
+  width: 322px;
+  height: 589px
 }
 
 .vc-phone-inner-1,
+.vc-phone-inner-2,
 .vc-phone-inner-3 {
-  width: 480px;
-  height: 872px
-}
-
-.vc-phone-inner-2 {
   width: 516px;
   height: 944px;
 }
 
-/* Telas menores: em vez de encolher os 3 celulares pra caber lado a lado (o que deixava o
-   conteúdo interno pequeno demais pra ler), a grade vira um carrossel — 1 celular grande por vez,
-   com scroll horizontal nativo (`overflow-x:auto` + `scroll-snap`) pra arrastar/deslizar até os
-   outros 2. Cada celular fica bem maior que antes (escala .625/.542 contra os .35/.21 anteriores)
-   já que só precisa caber sozinho na largura da tela, não os 3 ao mesmo tempo.
-   Breakpoint em 1230px (não 900px, onde .vc-resp-grid empilha texto/celulares) porque os 3
-   celulares no tamanho "desktop" só cabem sem quebrar a partir de ~1230px de largura de tela —
-   abaixo disso (inclusive em telas de laptop comuns como 1024/1152px, bem acima de onde o texto
-   já empilha) os 3 iam pra 2 linhas dentro da coluna lateral estreita. Carrossel nunca quebra
-   (só rola), então resolve esse intervalo (901-1230px) de graça, sem precisar de outro
-   breakpoint dedicado só pra isso. */
 @media (max-width:1230px) {
-  .vc-phones-grid {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 18px;
-    padding: 4px 25px 8px;
-    margin: 0 -25px
-  }
-
-  .vc-phones-grid::-webkit-scrollbar {
-    display: none
-  }
-
-  .vc-phone-item {
-    scroll-snap-align: center;
-    scroll-snap-stop: always
-  }
 
   .vc-phone-scale-1,
+  .vc-phone-scale-2,
   .vc-phone-scale-3 {
-    width: 300px;
-    height: 545px
-  }
-
-  .vc-phone-scale-2 {
-    width: 323px;
-    height: 590px
+    width: 387px;
+    height: 708px
   }
 
   .vc-phone-inner-1,
   .vc-phone-inner-2,
   .vc-phone-inner-3 {
-    transform: scale(.625)
+    transform: scale(.75)
   }
 
   .vc-phone-label {
@@ -465,23 +545,24 @@ html {
   }
 }
 
+/* Celular (também cobre tablets em pé) — antes essa faixa (dentro do max-width:900px) tinha um
+   tamanho bem menor e escondia a lista de 3 pontos, porque a seção ficava "presa" (pin) na tela
+   durante o scroll e o conteúdo empilhado não podia ultrapassar a altura da viewport. Isso não
+   existe mais (seção virou um carrossel por clique/toque, não precisa mais ficar presa), então o
+   celular volta a ter um tamanho normal aqui — só 20% maior que o valor anterior, como pedido. */
 @media (max-width:640px) {
 
   .vc-phone-scale-1,
+  .vc-phone-scale-2,
   .vc-phone-scale-3 {
-    width: 260px;
-    height: 472px
-  }
-
-  .vc-phone-scale-2 {
-    width: 280px;
-    height: 512px
+    width: 335px;
+    height: 614px
   }
 
   .vc-phone-inner-1,
   .vc-phone-inner-2,
   .vc-phone-inner-3 {
-    transform: scale(.5417)
+    transform: scale(.65)
   }
 }
 
@@ -645,7 +726,12 @@ header.vc-header.vc-nav-scrolled .vc-burger svg:first-child {
 
   .vc-resp-grid {
     grid-template-columns: 1fr;
-    gap: 36px
+    gap: 22px
+  }
+
+  .vc-resp-text-stage {
+    max-width: none;
+    margin-left: 0
   }
 
   .vc-plans-grid {
@@ -911,18 +997,6 @@ nav a[data-nav-link] {
   transition-delay: .25s
 }
 
-.vc-phones-grid>.vc-reveal:nth-child(1) {
-  transition-delay: .05s
-}
-
-.vc-phones-grid>.vc-reveal:nth-child(2) {
-  transition-delay: .15s
-}
-
-.vc-phones-grid>.vc-reveal:nth-child(3) {
-  transition-delay: .25s
-}
-
 .vc-faq-list>.vc-reveal:nth-child(1) {
   transition-delay: .02s
 }
@@ -1111,11 +1185,11 @@ nav a[data-nav-link] {
   animation: vc-float-phone 6s ease-in-out infinite
 }
 
-.vc-phones-grid>.vc-reveal:nth-child(2) .vc-phone-float {
+.vc-phones-grid>.vc-phone-item:nth-child(2) .vc-phone-float {
   animation-delay: .4s
 }
 
-.vc-phones-grid>.vc-reveal:nth-child(3) .vc-phone-float {
+.vc-phones-grid>.vc-phone-item:nth-child(3) .vc-phone-float {
   animation-delay: .8s
 }
 
@@ -1149,7 +1223,501 @@ nav a[data-nav-link] {
   .vc-day-dot,
   .vc-row-reveal,
   header.vc-header,
-  nav a[data-nav-link] {
+  nav a[data-nav-link],
+  .vc-resp-text-state,
+  .vc-phone-item,
+  .vc-resp-bg,
+  .vc-resp-tab {
     transition: none !important
+  }
+}
+
+/* ============================================================
+   Página de login (login.html / Vital Clinic - Login.dc.html)
+   ============================================================ */
+.vcl-in {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 0 9px;
+  border: none;
+  border-bottom: 1.5px solid #dbe3ee;
+  background: transparent;
+  color: #0b1220;
+  border-radius: 0
+}
+
+.vcl-in:focus {
+  outline: none;
+  border-bottom-color: #014dc4
+}
+
+.vcl-in::placeholder {
+  color: #a3aebd
+}
+
+@keyframes vclIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+
+  to {
+    opacity: 1;
+    transform: none
+  }
+}
+
+/* height fixo (não min-height) em toda a página de login — combinado com o overflow:hidden,
+   garante que NUNCA existe scroll vertical aqui, em nenhum tamanho de tela (qualquer sobra de
+   conteúdo é cortada silenciosamente, em vez de abrir uma barra de rolagem). 100svh (small
+   viewport height) em vez de 100vh: no celular de verdade (fora do Playwright, que simula um
+   viewport fixo sem barra de navegador) o 100vh é calculado pela altura MÁXIMA da tela, com a
+   barra de endereço escondida — enquanto ela está visível (estado inicial, antes de rolar), o
+   100vh fica MAIOR que a área realmente exibida, sobrando um pedacinho que gera a barra de
+   rolagem que apareceu no celular. 100svh usa sempre a altura MÍNIMA (com a barra visível),
+   garantindo que o conteúdo nunca ultrapasse o espaço de verdade disponível. Mantido 100vh como
+   fallback pra navegadores mais antigos que não reconhecem a unidade svh. */
+.vcl-root {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: #0a2a6b
+}
+
+.vcl-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0
+}
+
+.vcl-sl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity 1.2s ease, transform 7s ease-out
+}
+
+.vcl-root[data-i="0"] .vcl-s0,
+.vcl-root[data-i="1"] .vcl-s1,
+.vcl-root[data-i="2"] .vcl-s2,
+.vcl-root[data-i="3"] .vcl-s3,
+.vcl-root[data-i="4"] .vcl-s4 {
+  opacity: 1;
+  transform: scale(1)
+}
+
+/* .vcl-cluster agrupa logo+frase e o card de login como um bloco só, centralizado na tela —
+   em vez de cada um grudado numa borda oposta (era um grid de 2 colunas 1fr/1fr antes). */
+.vcl-cluster {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  padding: 40px clamp(24px, 5vw, 64px)
+}
+
+.vcl-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  flex: none;
+  max-width: 600px;
+  text-align: center
+}
+
+/* Tamanho base = desktop (50% maior que a versão anterior, só nessa faixa — tablet/celular têm
+   seus próprios tamanhos nos breakpoints abaixo). Sombra 15% mais suave que antes (.45 -> .38). */
+.vcl-left img {
+  height: 100px;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 14px rgba(0, 20, 70, .38));
+  flex: none
+}
+
+/* Pontinhos de navegação do slideshow escondidos a pedido do usuário — o slideshow continua
+   trocando de foto sozinho (setInterval em start()), só não tem mais o indicador visual. */
+.vcl-dots {
+  display: none
+}
+
+/* Botão em si é a área de toque (32x28px, dentro do recomendado p/ touch), bem maior que o
+   indicador visual (a bolinha de 8px em ::after) — melhora a precisão de toque em mobile/tablet
+   sem deixar os pontinhos visualmente grandes demais. */
+.vcl-dot {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.vcl-dot::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, .6);
+  transition: width .3s, background .3s
+}
+
+.vcl-root[data-i="0"] .vcl-d0::after,
+.vcl-root[data-i="1"] .vcl-d1::after,
+.vcl-root[data-i="2"] .vcl-d2::after,
+.vcl-root[data-i="3"] .vcl-d3::after,
+.vcl-root[data-i="4"] .vcl-d4::after {
+  width: 28px;
+  background: #fff
+}
+
+/* .vcl-sbody usa fluxo normal (flex column), não mais position:absolute com altura "no chute" —
+   assim o card e o rodapé nunca se sobrepõem, não importa a altura real do conteúdo/viewport. */
+.vcl-side {
+  position: relative;
+  align-self: stretch;
+  flex: none;
+  width: 100%;
+  max-width: 368px;
+  display: flex
+}
+
+.vcl-sbody {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 0
+}
+
+.vcl-card-wrap {
+  width: 100%
+}
+
+/* Vidro fosco (mesma técnica da navpill da landing: rgba + backdrop-filter) — opacidade mais
+   alta que a navpill (.6 vs .28) pra manter rótulos/campos do formulário bem legíveis, mas ainda
+   baixa o suficiente pra cor/forma da foto atrás aparecer suavemente embaçada (efeito "espelhado"). */
+.vcl-card {
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: blur(34px) saturate(1.3);
+  -webkit-backdrop-filter: blur(34px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, .65);
+  border-radius: 26px;
+  padding: 34px;
+  box-shadow: 0 30px 60px -30px rgba(1, 50, 140, .5)
+}
+
+/* Copyright e "voltar" ficam fora do rodapé centralizado, ancorados nos 2 cantos inferiores da tela. */
+.vcl-copy,
+.vcl-back {
+  position: absolute;
+  bottom: 20px;
+  z-index: 5;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, .85);
+  text-shadow: 0 2px 10px rgba(0, 20, 70, .55);
+  max-width: 38vw;
+  line-height: 1.4
+}
+
+.vcl-copy {
+  left: 20px;
+  margin: 0
+}
+
+.vcl-back {
+  right: 20px;
+  text-align: right;
+  padding: 0
+}
+
+.vcl-f-signup {
+  display: none
+}
+
+.vcl-root[data-mode="signup"] .vcl-f-signup {
+  display: block
+}
+
+.vcl-root[data-mode="signup"] .vcl-f-login {
+  display: none
+}
+
+.vcl-f-login,
+.vcl-f-signup {
+  animation: vclIn .5s .25s both
+}
+
+.vcl-root[data-mode="signup"] .vcl-submit {
+  background: #009bf8 !important
+}
+
+.vcl-lbl {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #014dc4;
+  margin: 0 0 2px
+}
+
+/* Os 3 ícones agora ficam dentro do card (fundo claro/vidro fosco) — por isso usam o azul da
+   marca (mesma cor de rótulos/ícone da "Clínica:" ali em cima), não mais branco: um ícone branco
+   aqui ficaria quase invisível sobre o fundo claro do card (mesmo problema já visto antes). */
+.vcl-card-soc {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border)
+}
+
+.vcl-soc {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  cursor: pointer
+}
+
+.vcl-soc:hover {
+  background: rgba(1, 77, 196, .08)
+}
+
+.vcl-soc-ic {
+  display: block;
+  width: 15px;
+  height: 15px;
+  background-color: #014dc4;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain
+}
+
+.vcl-soc-insta {
+  -webkit-mask-image: url(../img/insta_logo.svg);
+  mask-image: url(../img/insta_logo.svg)
+}
+
+.vcl-soc-wa {
+  -webkit-mask-image: url(../img/whatsapp_logo.svg);
+  mask-image: url(../img/whatsapp_logo.svg)
+}
+
+.vcl-soc-email {
+  -webkit-mask-image: url(../img/email_logo.svg);
+  mask-image: url(../img/email_logo.svg)
+}
+
+.vcl-swap {
+  background: none;
+  border: none;
+  color: #014dc4;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 10px 6px
+}
+
+.vcl-swap:hover {
+  color: #013a94;
+  text-decoration: underline
+}
+
+/* Tablet + phone (empilhado): regras compartilhadas pelas 2 faixas.
+   font-size:16px nos campos evita o zoom automático do Safari/iOS ao focar um input
+   com fonte menor que 16px — bug clássico de UX mobile, sem relação com o layout em si. */
+@media (max-width:860px) {
+  .vcl-in {
+    font-size: 16px
+  }
+
+  .vcl-cluster {
+    flex-direction: column;
+    gap: 10px;
+    padding: 36px 20px 8px;
+    min-height: 0
+  }
+
+  .vcl-left {
+    max-width: none
+  }
+
+  .vcl-left img {
+    height: 77px
+  }
+
+  .vcl-side {
+    max-width: 440px;
+    margin-top: 8px
+  }
+
+  .vcl-sbody {
+    padding: 0 16px 24px;
+    gap: 12px
+  }
+
+  .vcl-card-wrap {
+    width: calc(100% - 32px)
+  }
+
+  .vcl-card {
+    padding: 26px 22px
+  }
+
+  /* Sem largura pra dois cantos separados em telas estreitas — copyright e "voltar" voltam
+     a ficar centralizados, empilhados logo abaixo do rodapé, em vez de nos cantos da tela. */
+  .vcl-copy,
+  .vcl-back {
+    position: static;
+    max-width: none;
+    display: block;
+    text-align: center;
+    padding: 0 16px
+  }
+
+  .vcl-copy {
+    margin: 14px 0 0
+  }
+
+  .vcl-back {
+    margin: 8px 0 28px
+  }
+}
+
+/* Tablet (601–860px, ex: iPad em pé): mantém o respiro generoso da faixa acima —
+   tela ainda tem sobra de espaço, não precisa comprimir nada. */
+@media (min-width:601px) and (max-width:860px) {
+  .vcl-left img {
+    height: 84px
+  }
+
+  .vcl-side {
+    max-width: 460px
+  }
+}
+
+/* Celular (≤600px): ritmo vertical mais compacto — em telas pequenas, altura é o recurso
+   mais escasso (ainda mais com o teclado aberto durante o preenchimento do formulário). */
+@media (max-width:600px) {
+  .vcl-cluster {
+    padding: 28px 16px 8px
+  }
+
+  /* Logo desce 1em (pedido explícito) — compensado tirando a mesma folga do rodapé (margem
+     inferior do "Voltar para o site"), pra tudo deslocar pra baixo sem crescer de altura total
+     (o que reabriria o scroll vertical que acabamos de eliminar logo abaixo). */
+  .vcl-left {
+    margin-top: 1em
+  }
+
+  .vcl-left img {
+    height: 68px
+  }
+
+  .vcl-sbody {
+    gap: 10px
+  }
+
+  .vcl-card {
+    padding: 22px 20px
+  }
+}
+
+/* Baseado na ALTURA da tela, não na largura — fecha o scroll vertical desnecessário que
+   aparecia em celulares mais baixos (ex: iPhone SE, ~667px de altura), onde o respiro vertical
+   pensado pra telas maiores sobrava um pouco além dos 100vh. Também é aqui (não na faixa de
+   largura acima) que compensamos a margem de 1em da logo: nessas alturas o "Voltar para o site"
+   fica perto o bastante dos pontinhos do slideshow pra um simples deslocamento pra baixo
+   encostar neles, então fechamos a folga ANTES do copyright/voltar (não depois — espaço sobrando
+   depois do último elemento não desloca nada, só o espaço antes dele). */
+@media (max-height:700px) {
+  .vcl-cluster {
+    padding-top: 20px;
+    padding-bottom: 2px
+  }
+
+  .vcl-sbody {
+    gap: 8px
+  }
+
+  .vcl-card-soc {
+    margin-top: 6px;
+    padding-top: 6px
+  }
+
+  .vcl-copy {
+    margin-top: 0
+  }
+
+  .vcl-back {
+    margin-top: 0;
+    margin-bottom: 8px
+  }
+}
+
+/* Telas bem baixas e antigas (ex: iPhone SE 1ª geração, 320x568) — aperta mais um pouco o
+   card em si pra sobrar o mínimo de scroll possível mesmo nesse tamanho incomum hoje em dia. */
+@media (max-height:600px) {
+  .vcl-card {
+    padding: 16px 20px
+  }
+
+  .vcl-sbody {
+    padding-bottom: 10px
+  }
+
+  .vcl-f-login div[style*="margin-bottom"],
+  .vcl-f-signup div[style*="margin-bottom"] {
+    margin-bottom: 12px !important
+  }
+
+  .vcl-in[style*="margin-bottom"] {
+    margin-bottom: 12px !important
+  }
+}
+
+@media (max-width:360px) {
+  .vcl-left img {
+    height: 60px
+  }
+
+  .vcl-card {
+    padding: 20px 16px
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .vcl-sl {
+    transition: opacity .35s ease;
+    transform: none !important
+  }
+
+  .vcl-f-login,
+  .vcl-f-signup {
+    animation: none
   }
 }
