@@ -1238,7 +1238,7 @@ nav a[data-nav-link] {
 .vcl-in {
   width: 100%;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 10px;
   padding: 8px 0 9px;
   border: none;
   border-bottom: 1.5px solid #dbe3ee;
@@ -1595,6 +1595,13 @@ nav a[data-nav-link] {
     font-size: 16px
   }
 
+  /* Só o placeholder diminui — o font-size do próprio .vcl-in continua 16px (ver comentário
+     acima, bug do zoom automático do iOS); ::placeholder aceita um font-size próprio sem afetar
+     isso, já que o gatilho do zoom olha o font-size do input em si, não do pseudo-elemento. */
+  .vcl-in::placeholder {
+    font-size: 14px
+  }
+
   /* Mobile/tablet: sem o split lado-a-lado (não cabe numa tela estreita) — a foto vira fundo de
      tela inteira (.vcl-bg cobre 100% de novo, sem a largura/raio da "voltinha"), com um gradiente
      branco por cima (::after) que a faz "sumir" suavemente em direção à parte de baixo da tela,
@@ -1604,15 +1611,41 @@ nav a[data-nav-link] {
     --vcl-r: 40px
   }
 
+  /* Bug real do ajuste anterior: encolher a CAIXA da foto (bottom:20%) criava uma borda de
+     verdade onde ela terminava — como o gradiente (::after) ia só até #fff (não até a cor real
+     do fundo, --vcl-panel-bg), sobrava uma "costura" visível bem na linha de corte. Corrigido
+     removendo o corte físico (.vcl-bg volta a cobrir 100% da tela, sem bottom) — a foto "encolhe"
+     e "sobe" inteiramente via gradiente agora (sem nenhuma borda real), e o gradiente termina na
+     MESMA cor do fundo ao redor (--vcl-panel-bg, não #fff), então não tem como aparecer costura
+     nenhuma, seja qual for o ponto de corte. Pedido de subir mais 15% (em cima do 20% anterior)
+     aplicado deslocando os 2 pontos do gradiente pra cima (35%->0%, 75%->40%). */
   .vcl-bg {
     width: 100%
+  }
+
+  /* Causa real de "as pessoas não aparecem": .vcl-bg cobre a tela inteira (bem mais alta que
+     larga no mobile), mas as fotos são bem mais largas que altas — pra COBRIR essa altura toda
+     (object-fit:cover), o navegador precisa cortar quase 70% da LARGURA da foto, e como são 2
+     pessoas lado a lado, o recorte central geralmente não pega nenhuma das duas, só o fundo
+     borrado entre elas. Não é posição (object-position vertical não ajuda — a foto já cobre a
+     altura exatamente, não sobra espaço pra deslocar), é o CORTE horizontal sendo extremo demais.
+     Corrigido limitando a altura da própria <img> (não do .vcl-bg, nem do gradiente — ambos
+     continuam exatamente onde estavam) a um pouco mais que o ponto em que o gradiente já fica
+     100% opaco (40%) — sem sobra de foto visível além desse ponto mesmo, então reduzir a altura
+     da imagem não deixa nenhuma "beirada" aparecendo; só precisa cobrir menos altura, então corta
+     bem menos largura, e as pessoas voltam a aparecer. */
+  .vcl-sl {
+    top: 0;
+    bottom: auto;
+    height: 50.6vh;
+    object-position: center top
   }
 
   .vcl-bg::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 0%, transparent 35%, #fff 75%)
+    background: linear-gradient(to bottom, transparent 0%, transparent 42%, var(--vcl-panel-bg) 50%)
   }
 
   .vcl-notch {
@@ -1640,7 +1673,7 @@ nav a[data-nav-link] {
      usado nos outros textos/ícones que ficam sobre foto (.vcl-copy, .vcl-soc antigo etc). */
   .vcl-left img {
     height: 77px;
-    filter: brightness(0) invert(1) drop-shadow(0 2px 10px rgba(0, 20, 70, .45))
+    filter: brightness(0) invert(1) drop-shadow(0 2px 10px rgba(0, 20, 70, .4))
   }
 
   .vcl-side {
