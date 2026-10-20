@@ -33,13 +33,8 @@
     <img class="vcl-sl vcl-s3" src="assets/img/login/slide-4.jpg" alt="">
     <img class="vcl-sl vcl-s4" src="assets/img/login/slide-5.jpg" alt="">
   </div>
-  <div class="vcl-dots">
-    <button class="vcl-dot vcl-d0" type="button" aria-label="Imagem 1 de 5" onClick="{{ go0 }}"></button>
-    <button class="vcl-dot vcl-d1" type="button" aria-label="Imagem 2 de 5" onClick="{{ go1 }}"></button>
-    <button class="vcl-dot vcl-d2" type="button" aria-label="Imagem 3 de 5" onClick="{{ go2 }}"></button>
-    <button class="vcl-dot vcl-d3" type="button" aria-label="Imagem 4 de 5" onClick="{{ go3 }}"></button>
-    <button class="vcl-dot vcl-d4" type="button" aria-label="Imagem 5 de 5" onClick="{{ go4 }}"></button>
-  </div>
+
+  <div class="vcl-notch"></div>
 
   <div class="vcl-cluster">
     <div class="vcl-left">
@@ -90,10 +85,10 @@
       </div>
     </div>
   </div>
+  </div>
 
   <p class="vcl-copy">© 2026 Vital Clinic · Área restrita para profissionais autorizados</p>
   <a class="vcl-back" href="index.html">← Voltar para o site</a>
-  </div>
 
 </div>
 </x-dc>
@@ -101,22 +96,11 @@
 class Component extends DCLogic {
   // "Teste Grátis" no menu da landing leva pra cá com ?mode=signup, pra já abrir na aba de
   // cadastro em vez de login.
-  state = { showPw: false, mode: new URLSearchParams(location.search).get('mode') === 'signup' ? 'signup' : 'login', idx: 0 };
-  componentDidMount() {
-    this.prefersReducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    if (!this.prefersReducedMotion) this.start();
-  }
-  componentWillUnmount() { clearInterval(this.t); }
-  start() { clearInterval(this.t); this.t = setInterval(() => this.setState(s => ({ idx: (s.idx + 1) % 5 })), 6000); }
-  go(n) {
-    this.setState({ idx: n });
-    if (!this.prefersReducedMotion) this.start();
-  }
+  state = { showPw: false, mode: new URLSearchParams(location.search).get('mode') === 'signup' ? 'signup' : 'login', idx: Math.floor(Math.random() * 5) };
   renderVals() {
     return {
       mode: this.state.mode,
       idx: this.state.idx,
-      go0: () => this.go(0), go1: () => this.go(1), go2: () => this.go(2), go3: () => this.go(3), go4: () => this.go(4),
       pwType: this.state.showPw ? 'text' : 'password',
       togglePw: () => this.setState(s => ({ showPw: !s.showPw })),
       goLogin: () => this.setState({ mode: 'login' }),

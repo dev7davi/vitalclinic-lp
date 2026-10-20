@@ -1278,18 +1278,43 @@ nav a[data-nav-link] {
    rolagem que apareceu no celular. 100svh usa sempre a altura MÍNIMA (com a barra visível),
    garantindo que o conteúdo nunca ultrapasse o espaço de verdade disponível. Mantido 100vh como
    fallback pra navegadores mais antigos que não reconhecem a unidade svh. */
+/* "Voltinha" — técnica exata fornecida pelo usuário (arquivo de referência bordas-arredondadas.html):
+   --vcl-r é o raio das 2 curvas. A foto (.vcl-bg) se estende 50%+r (passa por BAIXO do painel,
+   sem cortar) — o painel (.vcl-cluster) cobre o resto com `border-radius` só no canto
+   SUPERIOR-ESQUERDO (var(--vcl-r)), revelando a foto por baixo nesse recorte (curva de cima).
+   .vcl-notch é uma peça extra só pra curva de BAIXO: um quadrado r×r com um radial-gradient que é
+   transparente num círculo de raio r encostado no canto superior-esquerdo do próprio quadrado —
+   como a distância até o canto oposto (r√2) é maior que r, sobra um "L" opaco (cor do painel) que
+   cobre a foto ali, criando o recorte arredondado de baixo. */
 .vcl-root {
+  --vcl-r: 176px;
+  --vcl-panel-bg: #f3f7fd;
   position: relative;
   height: 100vh;
   height: 100svh;
   overflow: hidden;
-  background: #0a2a6b
+  background: var(--vcl-panel-bg)
 }
 
 .vcl-bg {
   position: absolute;
-  inset: 0;
-  z-index: 0
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(50% + var(--vcl-r));
+  z-index: 0;
+  overflow: hidden;
+  background: #0a2a6b
+}
+
+.vcl-notch {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - var(--vcl-r));
+  width: var(--vcl-r);
+  height: var(--vcl-r);
+  z-index: 3;
+  background: radial-gradient(circle at 0 0, transparent calc(var(--vcl-r) - .5px), var(--vcl-panel-bg) var(--vcl-r))
 }
 
 .vcl-sl {
@@ -1313,15 +1338,22 @@ nav a[data-nav-link] {
 }
 
 /* .vcl-cluster agrupa logo+frase e o card de login como um bloco só, centralizado na tela —
-   em vez de cada um grudado numa borda oposta (era um grid de 2 colunas 1fr/1fr antes). */
+   em vez de cada um grudado numa borda oposta (era um grid de 2 colunas 1fr/1fr antes). O painel
+   (fundo + canto superior-esquerdo arredondado) é o que faz a curva de CIMA da "voltinha" — ver
+   comentário em .vcl-bg/.vcl-notch acima. */
 .vcl-cluster {
   position: relative;
   z-index: 2;
   min-height: 100vh;
+  width: 50%;
+  margin-left: 50%;
+  background: var(--vcl-panel-bg);
+  border-radius: var(--vcl-r) 0 0 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 56px;
+  gap: 28px;
   padding: 40px clamp(24px, 5vw, 64px)
 }
 
@@ -1340,7 +1372,6 @@ nav a[data-nav-link] {
    seus próprios tamanhos nos breakpoints abaixo). Sombra 15% mais suave que antes (.45 -> .38). */
 .vcl-left img {
   height: 100px;
-  filter: brightness(0) invert(1) drop-shadow(0 2px 14px rgba(0, 20, 70, .38));
   flex: none
 }
 
@@ -1385,10 +1416,13 @@ nav a[data-nav-link] {
 }
 
 /* .vcl-sbody usa fluxo normal (flex column), não mais position:absolute com altura "no chute" —
-   assim o card e o rodapé nunca se sobrepõem, não importa a altura real do conteúdo/viewport. */
+   assim o card e o rodapé nunca se sobrepõem, não importa a altura real do conteúdo/viewport.
+   Bug real: align-self:stretch era de quando .vcl-cluster era flex-direction:row (esticava a
+   ALTURA do lado do card, igual à logo) — depois que virou column (logo empilhada acima do
+   card), esse mesmo stretch passou a esticar a LARGURA até o max-width e grudar o card na borda
+   esquerda do painel, em vez de centralizar — por isso ficava desalinhado com a logo acima. */
 .vcl-side {
   position: relative;
-  align-self: stretch;
   flex: none;
   width: 100%;
   max-width: 368px;
@@ -1423,25 +1457,31 @@ nav a[data-nav-link] {
   box-shadow: 0 30px 60px -30px rgba(1, 50, 140, .5)
 }
 
-/* Copyright e "voltar" ficam fora do rodapé centralizado, ancorados nos 2 cantos inferiores da tela. */
+/* Copyright e "voltar" ficam fora do rodapé centralizado, ancorados nos 2 cantos inferiores da
+   tela. Cores diferentes porque cada um fica sobre um fundo diferente no desktop: o copyright
+   (canto esquerdo) fica sobre a FOTO (texto branco + sombra, pro contraste); o "voltar" (canto
+   direito) fica sobre o painel CLARO do gradiente (texto escuro, sem sombra — sombra escura sobre
+   fundo claro não ajudava em nada). No mobile os dois passam a ficar sobre o painel claro (ver
+   media query abaixo), então o copyright também vira escuro lá. */
 .vcl-copy,
 .vcl-back {
   position: absolute;
   bottom: 20px;
   z-index: 5;
   font-size: 11.5px;
-  color: rgba(255, 255, 255, .85);
-  text-shadow: 0 2px 10px rgba(0, 20, 70, .55);
   max-width: 38vw;
   line-height: 1.4
 }
 
 .vcl-copy {
   left: 20px;
-  margin: 0
+  margin: 0;
+  color: rgba(255, 255, 255, .85);
+  text-shadow: 0 2px 10px rgba(0, 20, 70, .55)
 }
 
 .vcl-back {
+  color: var(--text-3);
   right: 20px;
   text-align: right;
   padding: 0
@@ -1555,7 +1595,37 @@ nav a[data-nav-link] {
     font-size: 16px
   }
 
+  /* Mobile/tablet: a "voltinha" vira uma faixa de foto no topo (raio bem menor, só nos 2 cantos
+     de baixo da própria foto) em vez do split lado-a-lado — mesmo comportamento do arquivo de
+     referência do usuário. .vcl-root vira flex-column pra foto (altura fixa) e painel (resto do
+     espaço) empilharem como blocos normais, em vez de position:absolute. */
+  .vcl-root {
+    --vcl-r: 40px;
+    display: flex;
+    flex-direction: column
+  }
+
+  .vcl-bg {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    height: 250px;
+    flex: none;
+    border-radius: 0 0 var(--vcl-r) var(--vcl-r)
+  }
+
+  .vcl-notch {
+    display: none
+  }
+
   .vcl-cluster {
+    width: auto;
+    margin-left: 0;
+    flex: 1;
+    border-radius: 0;
+    background: transparent;
     flex-direction: column;
     gap: 10px;
     padding: 36px 20px 8px;
@@ -1599,8 +1669,13 @@ nav a[data-nav-link] {
     padding: 0 16px
   }
 
+  /* No mobile o copyright também passa a ficar sobre o painel claro (não mais sobre a foto,
+     que já some nessa faixa via .vcl-bg{display:none}) — por isso vira escuro aqui, igual o
+     "voltar" já era. */
   .vcl-copy {
-    margin: 14px 0 0
+    margin: 14px 0 0;
+    color: var(--text-3);
+    text-shadow: none
   }
 
   .vcl-back {
